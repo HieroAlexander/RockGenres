@@ -1,0 +1,519 @@
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
+
+const RockGenresLinktree = () => {
+  const [currentView, setCurrentView] = useState('main');
+  const [selectedGenre, setSelectedGenre] = useState(null);
+  const [selectedSubgenre, setSelectedSubgenre] = useState(null);
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      
+      @keyframes moveGradient {
+        0% {
+          transform: translate(0, 0) rotate(0deg);
+          opacity: 0.3;
+        }
+        25% {
+          transform: translate(100px, -80px) rotate(90deg);
+          opacity: 0.5;
+        }
+        50% {
+          transform: translate(-50px, 100px) rotate(180deg);
+          opacity: 0.4;
+        }
+        75% {
+          transform: translate(80px, 50px) rotate(270deg);
+          opacity: 0.6;
+        }
+        100% {
+          transform: translate(0, 0) rotate(360deg);
+          opacity: 0.3;
+        }
+      }
+      
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+      
+      @keyframes floatAndFade {
+        0%, 100% {
+          transform: translateY(0px) translateX(0px) scale(1);
+          opacity: 0.4;
+        }
+        25% {
+          transform: translateY(-60px) translateX(40px) scale(1.3);
+          opacity: 0.7;
+        }
+        50% {
+          transform: translateY(-30px) translateX(-50px) scale(0.9);
+          opacity: 0.5;
+        }
+        75% {
+          transform: translateY(-80px) translateX(30px) scale(1.2);
+          opacity: 0.65;
+        }
+      }
+      
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      
+      .animated-bg {
+        background: radial-gradient(ellipse at top left, #0a0000 0%, #000000 50%, #1a0000 100%);
+        position: relative;
+      }
+      
+      .animated-bg::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 30% 50%, rgba(220, 38, 38, 0.4) 0%, rgba(139, 0, 0, 0.25) 30%, transparent 60%);
+        animation: moveGradient 15s ease-in-out infinite;
+      }
+      
+      .animated-bg::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 70% 50%, rgba(185, 28, 28, 0.5) 0%, rgba(127, 29, 29, 0.3) 30%, transparent 60%);
+        animation: moveGradient 18s ease-in-out infinite reverse;
+      }
+      
+      .hover-button:hover {
+        transform: scale(1.05) translateY(-3px) !important;
+        box-shadow: 0 15px 30px rgba(220, 38, 38, 0.6) !important;
+        filter: brightness(1.1) !important;
+      }
+      
+      .hover-button-blue:hover {
+        transform: scale(1.05) translateY(-3px) !important;
+        box-shadow: 0 15px 30px rgba(185, 28, 28, 0.6) !important;
+        filter: brightness(1.1) !important;
+      }
+      
+      .floating-circle {
+        position: absolute;
+        border-radius: 50%;
+        animation: floatAndFade 12s ease-in-out infinite;
+        filter: blur(80px);
+      }
+      
+      .rotating-border {
+        display: none;
+      }
+      
+      .glow-effect {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .glow-effect::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      .glow-effect:hover::before {
+        opacity: 1;
+      }
+      
+      .shimmer {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: shimmerMove 3s infinite;
+      }
+      
+      @keyframes shimmerMove {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+      
+      @keyframes particle {
+        0% {
+          transform: translateY(0) translateX(0) scale(0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100vh) translateX(var(--tx)) scale(1);
+          opacity: 0;
+        }
+      }
+      
+      .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(220, 38, 38, 0.8);
+        border-radius: 50%;
+        animation: particle linear infinite;
+        box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+      }
+    `;
+    if (!document.head.querySelector('style[data-animations]')) {
+      style.setAttribute('data-animations', 'true');
+      document.head.appendChild(style);
+    }
+  }, []);
+
+  const genres = {
+    metal: {
+      name: 'Metal',
+      wiki: 'https://en.wikipedia.org/wiki/Heavy_metal_music',
+      subgenres: {
+        thrash: {
+          name: 'Thrash Metal',
+          wiki: 'https://en.wikipedia.org/wiki/Thrash_metal',
+          songs: [
+            { title: 'Master of Puppets', artist: 'Metallica', songLink: 'https://open.spotify.com/track/1FBF7Kz48ESYF5JOhYXoQU', artistLink: 'https://open.spotify.com/artist/2ye2Wgw4gimLv2eAKyk1NB' },
+            { title: 'Angel of Death', artist: 'Slayer', songLink: 'https://open.spotify.com/track/02yZNx0gMkSCZOSNoOcbIX', artistLink: 'https://open.spotify.com/artist/1IQ2e1buppatiN1bxUVkrk' },
+            { title: 'Raining Blood', artist: 'Slayer', songLink: 'https://open.spotify.com/track/2tp5xOOIDgJlhpuaREh7Gj', artistLink: 'https://open.spotify.com/artist/1IQ2e1buppatiN1bxUVkrk' },
+            { title: 'Peace Sells', artist: 'Megadeth', songLink: 'https://open.spotify.com/track/4I4MlVy1SeXkM4YzuhpqKr', artistLink: 'https://open.spotify.com/artist/1Yox196W7bzVNZI7RBaPnf' },
+            { title: 'Caught in a Mosh', artist: 'Anthrax', songLink: 'https://open.spotify.com/track/0VUfcC5GsdRYiuYqaXSVV7', artistLink: 'https://open.spotify.com/artist/6LZh9GjCWdYIV1JlS6JRnF' }
+          ]
+        },
+        death: {
+          name: 'Death Metal',
+          wiki: 'https://en.wikipedia.org/wiki/Death_metal',
+          songs: [
+            { title: 'Hammer Smashed Face', artist: 'Cannibal Corpse', songLink: 'https://open.spotify.com/track/30gVfGBdV1hTHWqz1svYTi', artistLink: 'https://open.spotify.com/artist/3uPD9lgKSiq6vN4NwHQYyN' },
+            { title: 'Spiritual Healing', artist: 'Death', songLink: 'https://open.spotify.com/track/4OlFN0TBXsITy7zF4u4k1h', artistLink: 'https://open.spotify.com/artist/1y8vXCXLwJF7H1JYR7sNDw' },
+            { title: 'Bleed', artist: 'Meshuggah', songLink: 'https://open.spotify.com/track/54SqONQpGJcw8mjw93rMrr', artistLink: 'https://open.spotify.com/artist/0M2VCWhC8BXHFvx7dJlW8' },
+            { title: 'Spheres of Madness', artist: 'Decapitated', songLink: 'https://open.spotify.com/track/5zPDZBPWV0EcC6Xn5aKuN5', artistLink: 'https://open.spotify.com/artist/26xpSDOWY73i2NbDamFGOy' },
+            { title: 'Effigy of the Forgotten', artist: 'Suffocation', songLink: 'https://open.spotify.com/track/5JvHqfVKYZKZAUTUdGo7jb', artistLink: 'https://open.spotify.com/artist/4spEcTLez1QAFRzpxKaTh6' }
+          ]
+        },
+        black: {
+          name: 'Black Metal',
+          wiki: 'https://en.wikipedia.org/wiki/Black_metal',
+          songs: [
+            { title: 'Freezing Moon', artist: 'Mayhem', songLink: 'https://open.spotify.com/track/26yUkixmKDpqUwtDWeGhxC', artistLink: 'https://open.spotify.com/artist/4p01vXAPo7Z85QfqlJaBnE' },
+            { title: 'Transilvanian Hunger', artist: 'Darkthrone', songLink: 'https://open.spotify.com/track/6C11p1nCCXaUKf9a7nWAqG', artistLink: 'https://open.spotify.com/artist/34jw2BbxjoYalTp8cJFCPv' },
+            { title: 'I Am the Black Wizards', artist: 'Emperor', songLink: 'https://open.spotify.com/track/2nYxPe04LGJmHzqcELAQRy', artistLink: 'https://open.spotify.com/artist/5WsGQU2wPr8tIGLfqNDD29' },
+            { title: 'Inno a Satana', artist: 'Emperor', songLink: 'https://open.spotify.com/track/7fWgBHYC3Xhv7kZE9i4V1E', artistLink: 'https://open.spotify.com/artist/5WsGQU2wPr8tIGLfqNDD29' },
+            { title: 'Mother North', artist: 'Satyricon', songLink: 'https://open.spotify.com/track/5XqRYpBBRo4Xf0pHZ25aM4', artistLink: 'https://open.spotify.com/artist/2nXJL8CpAbfgLbYLppxCKh' }
+          ]
+        }
+      }
+    },
+    rock: {
+      name: 'Rock',
+      wiki: 'https://en.wikipedia.org/wiki/Rock_music',
+      subgenres: {
+        classic: {
+          name: 'Classic Rock',
+          wiki: 'https://en.wikipedia.org/wiki/Classic_rock',
+          songs: [
+            { title: 'Stairway to Heaven', artist: 'Led Zeppelin', songLink: 'https://open.spotify.com/track/5CQ30WqJwcep0pYcV4AMNc', artistLink: 'https://open.spotify.com/artist/36QJpDe2go2KgaRleHCDTp' },
+            { title: 'Bohemian Rhapsody', artist: 'Queen', songLink: 'https://open.spotify.com/track/3z8h0TU7ReDPLIbEnYhWZb', artistLink: 'https://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d' },
+            { title: 'Hotel California', artist: 'Eagles', songLink: 'https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv', artistLink: 'https://open.spotify.com/artist/0ECwFtbIWEVNwjlrfc6xoL' },
+            { title: 'Sweet Child O Mine', artist: 'Guns N Roses', songLink: 'https://open.spotify.com/track/7o2CTH4ctstm8TNelqjb51', artistLink: 'https://open.spotify.com/artist/3qm84nBOXUEQ2vnTfUTTFC' },
+            { title: 'Comfortably Numb', artist: 'Pink Floyd', songLink: 'https://open.spotify.com/track/5HNCy40Ni5BZJFw1TKzRsC', artistLink: 'https://open.spotify.com/artist/0k17h0D3J5VfsdmQ1iZtE9' }
+          ]
+        },
+        alternative: {
+          name: 'Alternative Rock',
+          wiki: 'https://en.wikipedia.org/wiki/Alternative_rock',
+          songs: [
+            { title: 'Smells Like Teen Spirit', artist: 'Nirvana', songLink: 'https://open.spotify.com/track/4CeeEOM32jQcH3eN9Q2dGj', artistLink: 'https://open.spotify.com/artist/6olE6TJLqED3rqDCT0FyPh' },
+            { title: 'Creep', artist: 'Radiohead', songLink: 'https://open.spotify.com/track/70LcF31zb1H0PyJoS1Sx1r', artistLink: 'https://open.spotify.com/artist/4Z8W4fKeB5YxbusRsdQVPb' },
+            { title: 'Black Hole Sun', artist: 'Soundgarden', songLink: 'https://open.spotify.com/track/0vFOzaXqZHahrZp6enQwQb', artistLink: 'https://open.spotify.com/artist/5xUf6j4upBrXZPg6AI4MRK' },
+            { title: 'Under the Bridge', artist: 'Red Hot Chili Peppers', songLink: 'https://open.spotify.com/track/3d9DChrdc6BOeFsbrZ3Is0', artistLink: 'https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5' },
+            { title: 'Everlong', artist: 'Foo Fighters', songLink: 'https://open.spotify.com/track/5UWwZ5lm5PKu6eKsHAGxOk', artistLink: 'https://open.spotify.com/artist/7jy3rLJdDQY21OgRLCZ9sD' }
+          ]
+        },
+        progressive: {
+          name: 'Progressive Rock',
+          wiki: 'https://en.wikipedia.org/wiki/Progressive_rock',
+          songs: [
+            { title: 'Roundabout', artist: 'Yes', songLink: 'https://open.spotify.com/track/6KZPSD7iMjxH0szQ0EFWHm', artistLink: 'https://open.spotify.com/artist/7AC976RDJzL2asmZuz7qil' },
+            { title: '21st Century Schizoid Man', artist: 'King Crimson', songLink: 'https://open.spotify.com/track/6RBnmCKj0FCVVidi2kBF1m', artistLink: 'https://open.spotify.com/artist/7M1FPw29m5FbicYzS2xdpi' },
+            { title: 'Tom Sawyer', artist: 'Rush', songLink: 'https://open.spotify.com/track/6FmHkpJhfRCjYZYB09xhGy', artistLink: 'https://open.spotify.com/artist/2Hkut4rAAyrQxRdof7FVJq' },
+            { title: 'Shine On You Crazy Diamond', artist: 'Pink Floyd', songLink: 'https://open.spotify.com/track/6kV5GJCrodWvJ8Z97FxL9C', artistLink: 'https://open.spotify.com/artist/0k17h0D3J5VfsdmQ1iZtE9' },
+            { title: 'Supper\'s Ready', artist: 'Genesis', songLink: 'https://open.spotify.com/track/2nGFzvlVB81Vh4bCCGBIjw', artistLink: 'https://open.spotify.com/artist/3CkvROUTQ6nRi9yQOcsB50' }
+          ]
+        }
+      }
+    },
+    punk: {
+      name: 'Punk',
+      wiki: 'https://en.wikipedia.org/wiki/Punk_rock',
+      subgenres: {
+        hardcore: {
+          name: 'Hardcore Punk',
+          wiki: 'https://en.wikipedia.org/wiki/Hardcore_punk',
+          songs: [
+            { title: 'Rise Above', artist: 'Black Flag', songLink: 'https://open.spotify.com/track/1YCfNmRrVLfjJJJAD9Nf93', artistLink: 'https://open.spotify.com/artist/0Y7qkJPuC6b9tcI0ntfHx8' },
+            { title: 'Minor Threat', artist: 'Minor Threat', songLink: 'https://open.spotify.com/track/3R3UYYdDhvbwX8I5WJDnNo', artistLink: 'https://open.spotify.com/artist/37L31eVMSgMGhAm9Cr6oHG' },
+            { title: 'Banned in D.C.', artist: 'Bad Brains', songLink: 'https://open.spotify.com/track/0kJznZZRdNCRF1P0Ui7vIe', artistLink: 'https://open.spotify.com/artist/0aWMtNZGmhm9VzGCt5SLfP' },
+            { title: 'Straight Edge', artist: 'Minor Threat', songLink: 'https://open.spotify.com/track/6EVPNhfWOpzAA8UzYNGqvI', artistLink: 'https://open.spotify.com/artist/37L31eVMSgMGhAm9Cr6oHG' },
+            { title: 'Police Story', artist: 'Black Flag', songLink: 'https://open.spotify.com/track/27F8NYrFrEO6eNHzZGgBXG', artistLink: 'https://open.spotify.com/artist/0Y7qkJPuC6b9tcI0ntfHx8' }
+          ]
+        },
+        pop: {
+          name: 'Pop Punk',
+          wiki: 'https://en.wikipedia.org/wiki/Pop_punk',
+          songs: [
+            { title: 'All the Small Things', artist: 'Blink-182', songLink: 'https://open.spotify.com/track/4kflIGfjdZJW4IncMsDJBP', artistLink: 'https://open.spotify.com/artist/6FBDaR13swtiWwGhX1WQsP' },
+            { title: 'Basket Case', artist: 'Green Day', songLink: 'https://open.spotify.com/track/6L89mwZXSCq9vJNWYwXKJf', artistLink: 'https://open.spotify.com/artist/7oPftvlwr6VrsViSDV7fJY' },
+            { title: 'Fat Lip', artist: 'Sum 41', songLink: 'https://open.spotify.com/track/79cuOz3SPQTuFrp8WgftAu', artistLink: 'https://open.spotify.com/artist/0qT79UgT5tY4yudH9VfsdT' },
+            { title: 'The Middle', artist: 'Jimmy Eat World', songLink: 'https://open.spotify.com/track/0qg5sTdJnZPzZQms5BYFC1', artistLink: 'https://open.spotify.com/artist/3Ayl7mCk0nScecqOzvNp6s' },
+            { title: 'My Friends Over You', artist: 'New Found Glory', songLink: 'https://open.spotify.com/track/4bNwPT7Km5tARcRKaL8Nsu', artistLink: 'https://open.spotify.com/artist/6QbVuCSHbaCstNHKrfz8QJ' }
+          ]
+        },
+        postpunk: {
+          name: 'Post-Punk',
+          wiki: 'https://en.wikipedia.org/wiki/Post-punk',
+          songs: [
+            { title: 'Love Will Tear Us Apart', artist: 'Joy Division', songLink: 'https://open.spotify.com/track/6wWHMW2xFJdITOvNT9GMBK', artistLink: 'https://open.spotify.com/artist/432R46LaYsJZV2Gmc4jUV5' },
+            { title: 'This Charming Man', artist: 'The Smiths', songLink: 'https://open.spotify.com/track/73AC1OfogjFbKv8I9M1XIA', artistLink: 'https://open.spotify.com/artist/3yY2gUcIsjMr8hjo51PoJ8' },
+            { title: 'Blue Monday', artist: 'New Order', songLink: 'https://open.spotify.com/track/4JqF6JgSVH7V3MsDe9lDWj', artistLink: 'https://open.spotify.com/artist/0yNSBXQc0cDJ0NLADdQCzK' },
+            { title: 'Bela Lugosi\'s Dead', artist: 'Bauhaus', songLink: 'https://open.spotify.com/track/5AsvXf2YC1H7EKj3aBz9dV', artistLink: 'https://open.spotify.com/artist/0jqp18mzkauXGAHrVMGJ4w' },
+            { title: 'Once in a Lifetime', artist: 'Talking Heads', songLink: 'https://open.spotify.com/track/7xN7SBmHhHvEMdv6sBl7dp', artistLink: 'https://open.spotify.com/artist/2x9SpqnPi8rlE9pjHBwmSC' }
+          ]
+        }
+      }
+    }
+  };
+
+  const handleGenreClick = (genreKey) => {
+    setSelectedGenre(genreKey);
+    setCurrentView('subgenres');
+  };
+
+  const handleSubgenreClick = (subgenreKey) => {
+    setSelectedSubgenre(subgenreKey);
+    setCurrentView('songs');
+  };
+
+  const handleBack = () => {
+    if (currentView === 'songs') {
+      setCurrentView('subgenres');
+      setSelectedSubgenre(null);
+    } else if (currentView === 'subgenres') {
+      setCurrentView('main');
+      setSelectedGenre(null);
+    }
+  };
+
+  return (
+    <div className="min-h-screen animated-bg flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Floating circles background */}
+      <div className="floating-circle" style={{ width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(220,38,38,0.8) 0%, rgba(139,0,0,0.5) 35%, transparent 65%)', top: '0%', left: '-5%', animationDelay: '0s', animationDuration: '16s' }}></div>
+      <div className="floating-circle" style={{ width: '450px', height: '450px', background: 'radial-gradient(circle, rgba(185,28,28,0.75) 0%, rgba(127,29,29,0.45) 35%, transparent 65%)', top: '40%', right: '0%', animationDelay: '4s', animationDuration: '20s' }}></div>
+      <div className="floating-circle" style={{ width: '550px', height: '550px', background: 'radial-gradient(circle, rgba(239,68,68,0.7) 0%, rgba(153,27,27,0.4) 35%, transparent 65%)', bottom: '5%', left: '5%', animationDelay: '8s', animationDuration: '24s' }}></div>
+      <div className="floating-circle" style={{ width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(127,29,29,0.8) 0%, rgba(185,28,28,0.5) 35%, transparent 65%)', top: '20%', right: '10%', animationDelay: '12s', animationDuration: '18s' }}></div>
+      <div className="floating-circle" style={{ width: '480px', height: '480px', background: 'radial-gradient(circle, rgba(153,27,27,0.75) 0%, rgba(220,38,38,0.45) 35%, transparent 65%)', bottom: '25%', right: '20%', animationDelay: '6s', animationDuration: '22s' }}></div>
+      <div className="floating-circle" style={{ width: '420px', height: '420px', background: 'radial-gradient(circle, rgba(200,30,30,0.7) 0%, rgba(160,20,20,0.4) 35%, transparent 65%)', top: '50%', left: '20%', animationDelay: '10s', animationDuration: '19s' }}></div>
+      
+      {/* Particle effects */}
+      {[...Array(20)].map((_, i) => (
+        <div
+          key={i}
+          className="particle"
+          style={{
+            left: `${Math.random() * 100}%`,
+            bottom: '0',
+            animationDuration: `${15 + Math.random() * 10}s`,
+            animationDelay: `${Math.random() * 10}s`,
+            '--tx': `${(Math.random() - 0.5) * 200}px`
+          }}
+        />
+      ))}
+      
+      <div className="w-full max-w-md relative z-10">
+        <div className="text-center mb-8">
+          <h1 className="text-6xl font-bold text-white mb-3 drop-shadow-lg relative" style={{ textShadow: '0 0 40px rgba(220,38,38,1), 0 0 20px rgba(220,38,38,0.8)', fontFamily: 'Impact, sans-serif', letterSpacing: '3px' }}>
+            ROCK GENRES
+          </h1>
+          <div className="h-1 w-32 bg-gradient-to-r from-transparent via-red-600 to-transparent mx-auto mb-3"></div>
+          <p className="text-gray-300 text-lg tracking-wider">Explore Metal, Rock, and Punk</p>
+        </div>
+
+        <div className="bg-black bg-opacity-60 backdrop-blur-2xl rounded-3xl shadow-2xl p-8 border-2 border-red-900 border-opacity-40 relative overflow-hidden">
+          {/* Inner glow effect */}
+          <div className="absolute inset-0 rounded-3xl" style={{ 
+            boxShadow: 'inset 0 0 60px rgba(220, 38, 38, 0.15)',
+            pointerEvents: 'none'
+          }}></div>
+          
+          {/* Decorative corner accents */}
+          <div className="absolute top-0 left-0 w-20 h-20 border-t-4 border-l-4 border-red-600 rounded-tl-3xl opacity-50"></div>
+          <div className="absolute top-0 right-0 w-20 h-20 border-t-4 border-r-4 border-red-600 rounded-tr-3xl opacity-50"></div>
+          <div className="absolute bottom-0 left-0 w-20 h-20 border-b-4 border-l-4 border-red-600 rounded-bl-3xl opacity-50"></div>
+          <div className="absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-red-600 rounded-br-3xl opacity-50"></div>
+          {currentView === 'main' && (
+            <div className="space-y-5 relative z-10" style={{ animation: 'fadeIn 0.5s ease-in-out' }}>
+              {Object.entries(genres).map(([key, genre]) => (
+                <button
+                  key={key}
+                  onClick={() => handleGenreClick(key)}
+                  className="hover-button glow-effect w-full bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white font-bold py-6 px-8 rounded-2xl transition-all duration-200 ease-in-out shadow-lg flex items-center justify-between relative overflow-hidden border-2 border-red-800 border-opacity-50"
+                  style={{ backgroundSize: '200% 100%', letterSpacing: '1px' }}
+                >
+                  <div className="shimmer"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 hover:opacity-10 transition-opacity duration-300" style={{ transform: 'skewX(-20deg)' }}></div>
+                  <span className="text-xl relative z-10 drop-shadow-lg">{genre.name}</span>
+                  <a
+                    href={genre.wiki}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="px-3 py-1.5 border-2 border-white rounded-full hover:bg-white hover:text-red-700 transition-all duration-300 ease-in-out flex items-center gap-1 text-sm font-semibold relative z-10 hover:scale-110"
+                  >
+                    <span>Wikipedia</span>
+                    <ExternalLink size={16} />
+                  </a>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {currentView === 'subgenres' && selectedGenre && (
+            <div style={{ animation: 'fadeIn 0.5s ease-in-out' }} className="relative z-10">
+              <button
+                onClick={handleBack}
+                className="mb-6 flex items-center text-gray-300 hover:text-white transition-all duration-300 ease-in-out hover:translate-x-[-8px] hover:scale-110 bg-red-900 bg-opacity-20 px-4 py-2 rounded-lg border border-red-800 border-opacity-30"
+              >
+                <ArrowLeft size={22} className="mr-2" />
+                <span className="font-semibold">Back</span>
+              </button>
+              <h2 className="text-4xl font-bold text-white mb-8 tracking-wide" style={{ textShadow: '0 0 20px rgba(220,38,38,0.8)', fontFamily: 'Impact, sans-serif' }}>{genres[selectedGenre].name} Subgenres</h2>
+              <div className="space-y-5">
+                {Object.entries(genres[selectedGenre].subgenres).map(([key, subgenre]) => (
+                  <button
+                    key={key}
+                    onClick={() => handleSubgenreClick(key)}
+                    className="hover-button-blue glow-effect w-full bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white font-bold py-6 px-8 rounded-2xl transition-all duration-200 ease-in-out shadow-lg flex items-center justify-between relative overflow-hidden border-2 border-red-900 border-opacity-50"
+                    style={{ backgroundSize: '200% 100%', letterSpacing: '1px' }}
+                  >
+                    <div className="shimmer"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 hover:opacity-10 transition-opacity duration-300" style={{ transform: 'skewX(-20deg)' }}></div>
+                    <span className="text-xl relative z-10 drop-shadow-lg">{subgenre.name}</span>
+                    <a
+                      href={subgenre.wiki}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="px-3 py-1.5 border-2 border-white rounded-full hover:bg-white hover:text-red-800 transition-all duration-300 ease-in-out flex items-center gap-1 text-sm font-semibold relative z-10 hover:scale-110"
+                    >
+                      <span>Wikipedia</span>
+                      <ExternalLink size={16} />
+                    </a>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentView === 'songs' && selectedGenre && selectedSubgenre && (
+            <div style={{ animation: 'fadeIn 0.5s ease-in-out' }} className="relative z-10">
+              <button
+                onClick={handleBack}
+                className="mb-6 flex items-center text-gray-300 hover:text-white transition-all duration-300 ease-in-out hover:translate-x-[-8px] hover:scale-110 bg-red-900 bg-opacity-20 px-4 py-2 rounded-lg border border-red-800 border-opacity-30"
+              >
+                <ArrowLeft size={22} className="mr-2" />
+                <span className="font-semibold">Back</span>
+              </button>
+              <h2 className="text-4xl font-bold text-white mb-8 tracking-wide" style={{ textShadow: '0 0 20px rgba(220,38,38,0.8)', fontFamily: 'Impact, sans-serif' }}>
+                {genres[selectedGenre].subgenres[selectedSubgenre].name}
+              </h2>
+              <div className="space-y-4">
+                {genres[selectedGenre].subgenres[selectedSubgenre].songs.map((song, index) => (
+                  <div key={index} className="bg-gradient-to-r from-gray-900 to-black bg-opacity-80 rounded-xl p-6 transition-all duration-300 ease-in-out hover:bg-opacity-90 hover:transform hover:scale-105 hover:shadow-xl hover:shadow-red-900/40 border-2 border-red-900 border-opacity-30 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-900/0 via-red-900/10 to-red-900/0 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                    <div className="flex items-start justify-between mb-2 relative z-10">
+                      <div className="flex-1">
+                        <a
+                          href={song.songLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-white font-bold text-lg hover:text-red-400 transition-all duration-300 ease-in-out flex items-center gap-2 hover:translate-x-1"
+                        >
+                          {song.title}
+                          <span className="px-2.5 py-1 text-xs border-2 border-red-500 rounded-full hover:bg-red-500 hover:text-white hover:border-red-500 transition-all duration-300 ease-in-out font-semibold">Spotify</span>
+                          <ExternalLink size={16} />
+                        </a>
+                        <a
+                          href={song.artistLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-300 text-base hover:text-red-300 transition-all duration-300 ease-in-out flex items-center gap-2 mt-2 hover:translate-x-1"
+                        >
+                          {song.artist}
+                          <span className="px-2.5 py-1 text-xs border-2 border-red-400 rounded-full hover:bg-red-400 hover:text-white hover:border-red-400 transition-all duration-300 ease-in-out font-semibold">Spotify</span>
+                          <ExternalLink size={14} />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RockGenresLinktree;
